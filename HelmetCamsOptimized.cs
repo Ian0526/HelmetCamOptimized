@@ -1,10 +1,12 @@
 using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
 [BepInPlugin("Ovchinikov.HelmetCamsOptimized.Main", "HelmetCamsOptimized", "1.0.0")]
+[BepInDependency("RickArg.lethalcompany.helmetcameras", BepInDependency.DependencyFlags.SoftDependency)]
 public class HelmetCamsOptimizedMain : BaseUnityPlugin
 {
     private static ManualLogSource logger;
@@ -13,6 +15,9 @@ public class HelmetCamsOptimizedMain : BaseUnityPlugin
     {
         logger = Logger;
         logger.LogInfo("HelmetCamsOptimized plugin loaded.");
+
+        // if other plugin is present, force disable it
+        CheckAndDisableOldPlugin();
 
         // Initialize and patch Netcode
         NetcodePatcher();
@@ -59,6 +64,28 @@ public class HelmetCamsOptimizedMain : BaseUnityPlugin
             }
         }
         Log("[NetcodePatcher] Completed runtime initialization.");
+    }
+
+    private void CheckAndDisableOldPlugin()
+    {
+        string oldPluginGUID = "RickArg.lethalcompany.helmetcameras";
+
+        // Look for the old plugin in the loaded plugin chain
+        var oldPluginInfo = BepInEx.Bootstrap.Chainloader.PluginInfos
+            .FirstOrDefault(p => p.Value.Metadata.GUID == oldPluginGUID);
+
+        if (oldPluginInfo.Value != null)
+        {
+            Logger.LogWarning($"Detected old HelmetCams plugin: {oldPluginInfo.Value.Metadata.Name} v{oldPluginInfo.Value.Metadata.Version}");
+
+            // Locate and disable its core MonoBehaviour (if any)
+            var oldPluginInstance = oldPluginInfo.Value.Instance as MonoBehaviour;
+            if (oldPluginInstance != null)
+            {
+                oldPluginInstance.enabled = false;
+                Logger.LogInfo("Old HelmetCams MonoBehaviour disabled. You can remove the old plugin from your modpack.");
+            }
+        }
     }
 
     private void OnDestroy()
