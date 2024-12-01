@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is an optimized version of the Helmet Camera Plugin for **Lethal Company**, aimed at improving the performance while maintaining functionality. The plugin dynamically adjusts its behavior based on system performance to deliver smoother gameplay while minimizing resource usage.
+This is an optimized version of the Helmet Camera Plugin for **Lethal Company**, aimed at improving the performance while maintaining functionality. The plugin dynamically adjusts its behavior based on system performance to deliver smoother gameplay while minimizing resource usage. 
 
 ## Key Optimizations
 
@@ -40,4 +40,10 @@ Alternatively, you can create a ticket, or email me at **ian@ovchinikov.dev**
 
 - The plugin supports dynamic FPS scaling and visibility checks to ensure optimized resource usage.
 - Default FPS is set to 30 for rendering updates, but this is adjusted dynamically based on system performance.
-- Thank you for using the optimized Helmet Camera Plugin!
+
+## Credits
+
+- **Original Plugin**: [RickArg's Helmet Cameras](https://thunderstore.io/c/lethal-company/p/RickArg/)  
+- **Original Repository**: [The0therOne/Helmet_Cameras](https://github.com/The0therOne/Helmet_Cameras)
+  
+Thank you @The0ther0ne, I would've spent a signficant amount of time trying to figure out the knitty-gritty details of this project.
