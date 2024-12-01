@@ -13,7 +13,7 @@ public class HelmetCameraBehavior : MonoBehaviour
     private Transform targetPlayerTransform;
 
     private const float MaxRenderDistance = 50f;
-    private const int DefaultResolution = 48;
+    private const int DefaultResolution = 1024;
     private const float DefaultCameraFps = 30f;
     private const float VisibilityCheckInterval = 1f;
 
@@ -22,7 +22,6 @@ public class HelmetCameraBehavior : MonoBehaviour
 
     private bool isMonitorVisible = true;
     private Transform cachedTargetTransform;
-    private RenderTexture dummyTexture;
 
     private void Awake()
     {
@@ -40,11 +39,10 @@ public class HelmetCameraBehavior : MonoBehaviour
 
         if (allTargets.Count > 0)
         {
-            targetPlayerTransform = allTargets[0].transform;
-            cachedTargetTransform = targetPlayerTransform;
+            SetTarget(allTargets[0]);
         }
 
-        StartCoroutine(MonitorVisibilityAndDistanceCheck());
+        StartCoroutine(MonitorVisibilityCheck());
     }
 
     private void InitializeCamera()
@@ -52,14 +50,9 @@ public class HelmetCameraBehavior : MonoBehaviour
         renderTexture = new RenderTexture(DefaultResolution, DefaultResolution, 24);
         renderTexture.Create();
 
-        dummyTexture = new RenderTexture(DefaultResolution, DefaultResolution, 24);
-        dummyTexture.Create();
-
         helmetCamera = new GameObject("HelmetCamera").AddComponent<Camera>();
         helmetCamera.targetTexture = renderTexture;
-        helmetCamera.clearFlags = CameraClearFlags.Depth;
-        helmetCamera.backgroundColor = Color.black; // Set to black for reduced flickering
-        helmetCamera.cullingMask = LayerMask.GetMask("Default");
+        helmetCamera.cullingMask = 20649983;
         helmetCamera.farClipPlane = MaxRenderDistance;
         helmetCamera.nearClipPlane = 0.55f;
 
@@ -75,7 +68,7 @@ public class HelmetCameraBehavior : MonoBehaviour
             monitorRenderer = monitorObject.GetComponent<MeshRenderer>();
             if (monitorRenderer != null)
             {
-                monitorRenderer.materials[2].mainTexture = dummyTexture; // Start with dummy texture
+                monitorRenderer.materials[2].mainTexture = renderTexture; // Ensure only `renderTexture` is applied
             }
         }
     }
@@ -105,7 +98,20 @@ public class HelmetCameraBehavior : MonoBehaviour
         }
     }
 
-    private IEnumerator MonitorVisibilityAndDistanceCheck()
+    private void SetTarget(TransformAndName target)
+    {
+        var helmetLights = target.transform.Find("ScavengerModel/metarig/CameraContainer/MainCamera/HelmetLights");
+        if (helmetLights != null)
+        {
+            cachedTargetTransform = helmetLights;
+        }
+        else
+        {
+            cachedTargetTransform = target.transform; // Fallback if "HelmetLights" isn't found
+        }
+    }
+
+    private IEnumerator MonitorVisibilityCheck()
     {
         while (true)
         {
@@ -113,9 +119,9 @@ public class HelmetCameraBehavior : MonoBehaviour
             {
                 isMonitorVisible = monitorRenderer.isVisible;
 
-                if (!isMonitorVisible || Vector3.Distance(Camera.main.transform.position, monitorObject.transform.position) > MaxRenderDistance)
+                // Disable rendering when the monitor is out of range or not visible
+                if (!isMonitorVisible)
                 {
-                    monitorRenderer.materials[2].mainTexture = dummyTexture; // Assign dummy texture when monitor not visible
                     yield return new WaitForSeconds(VisibilityCheckInterval);
                     continue;
                 }
@@ -132,7 +138,7 @@ public class HelmetCameraBehavior : MonoBehaviour
 
         elapsedTime += Time.deltaTime;
 
-        if (elapsedTime >= 1f / cameraFps)
+        if (elapsedTime > 1f / cameraFps)
         {
             elapsedTime = 0f;
             RenderCameraFrame();
@@ -141,11 +147,18 @@ public class HelmetCameraBehavior : MonoBehaviour
 
     private void RenderCameraFrame()
     {
-        helmetCamera.transform.position = cachedTargetTransform.position + new Vector3(0, 1.6f, 0);
+        if (cachedTargetTransform == null)
+            return;
+
+        // Update the camera's position and rotation based on the player's "HelmetLights" transform
+        helmetCamera.transform.position = cachedTargetTransform.position;
         helmetCamera.transform.rotation = cachedTargetTransform.rotation;
 
-        // Render the camera and update the monitor texture
-        monitorRenderer.materials[2].mainTexture = renderTexture;
+        // Ensure the monitor is using the correct texture
+        if (monitorRenderer != null && monitorRenderer.materials[2].mainTexture != renderTexture)
+        {
+            monitorRenderer.materials[2].mainTexture = renderTexture;
+        }
     }
 
     private void OnDestroy()
@@ -153,11 +166,6 @@ public class HelmetCameraBehavior : MonoBehaviour
         if (renderTexture != null)
         {
             renderTexture.Release();
-        }
-
-        if (dummyTexture != null)
-        {
-            dummyTexture.Release();
         }
 
         if (helmetCamera != null)
