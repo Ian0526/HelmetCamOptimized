@@ -40,6 +40,7 @@ Alternatively, you can create a ticket, or email me at **ian@ovchinikov.dev**
 
 - The plugin supports dynamic FPS scaling and visibility checks to ensure optimized resource usage.
 - Default FPS is set to 30 for rendering updates, but this is adjusted dynamically based on system performance.
+- If you want to profile this yourself, be sure to not have the [original](https://thunderstore.io/c/lethal-company/p/RickArg/Helmet_Cameras/) plugin installed. It is forced disabled, but prevents SimpleMonoProfiler from dumping. Try them independently.
 
 ## Credits
 
