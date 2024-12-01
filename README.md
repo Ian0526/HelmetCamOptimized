@@ -15,11 +15,11 @@ This is an optimized version of the Helmet Camera Plugin for **Lethal Company**,
    - Efficient toggling between enabled/disabled states to minimize runtime costs.
 
 3. **Visibility and Distance Checks**:
-   - Updates are paused when the monitor is not visible or exceeds the render distance.
+   - Updates now check if the monitor is in view insteaad of just checking if you're on the ship.
    - Reduces unnecessary processing during these conditions.
 
 4. **Optimized Resolution**:
-   - Default resolution set to 1024x1024 for a balance between performance and visual quality.
+   - Default resolution set to 1024x1024 for a balance between performance and visual quality. (The runtime between 42x42 and 1024x1024 was a negligible difference of about +/- 16,000 ns)
 
 ## Runtime Comparison (Per Call)
 
