@@ -14,8 +14,8 @@ This is an optimized version of the Helmet Camera Plugin for **Lethal Company**,
    - Removed reliance on resource-heavy methods like `Render()`.
    - Efficient toggling between enabled/disabled states to minimize runtime costs.
 
-3. **Visibility and Distance Checks**:
-   - Updates now check if the monitor is in view insteaad of just checking if you're on the ship.
+3. **Visibility Check**:
+   - Updates now check if the monitor is in view instead of just checking if you're on the ship.
    - Reduces unnecessary processing during these conditions.
 
 4. **Optimized Resolution**:
