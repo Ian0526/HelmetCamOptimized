@@ -67,5 +67,3 @@ Alternatively, you can create a ticket or email me at **ian@ovchinikov.dev**.
 
 - **Original Plugin**: [RickArg's Helmet Cameras](https://thunderstore.io/c/lethal-company/p/RickArg/)  
 - **Original Repository**: [The0therOne/Helmet_Cameras](https://github.com/The0therOne/Helmet_Cameras)
-
-A huge thank you to @The0ther0ne for the foundational work that inspired this optimized version.
